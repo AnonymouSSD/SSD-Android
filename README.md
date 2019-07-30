@@ -1,13 +1,10 @@
-# ShadowsocksD for Android
+# ShadowsocksD-X for Android
 
 ## Basic Project - 基础项目
 
-[shadowsocks-android](https://github.com/shadowsocks/shadowsocks-android)
+[SSD-Andoird](https://github.com/TheCGDF/SSD-Android)
 
-ShadowsocksD会跟随Shadowsocks更新代码。
-```
-  *  ShadowsocksD中的广告收入依然归Shadowsocks项目作者所有，ShadowsocksD不会分取此收入
-```
+本项目与上游项目SSD-Andoird保持同步。**仅去除系统及APP限制。**
 
 ## Shared Wiki - 共享Wiki
 
@@ -17,11 +14,7 @@ ShadowsocksD会跟随Shadowsocks更新代码。
 
 Android 5.0+
 
-非\[华为（EMUI）/360（360 OS）/锤子（SmartisanOS）\]系统
-
-不建议使用\[小米（MIUI）\]系统
-
-无\[360/2345/百度/腾讯\]全家桶
+**去除了无法在特定系统及含有特定APP的手机上运行SSD的限制。**
 
 ## Development - 开发
 
