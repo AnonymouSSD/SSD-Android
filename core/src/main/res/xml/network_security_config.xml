@@ -1,10 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <!-- SSD -->
-    <base-config cleartextTrafficPermitted="true">
-        <trust-anchors>
-            <certificates src="system" />
-        </trust-anchors>
-    </base-config>
-    <!-- DSS -->
+    <base-config cleartextTrafficPermitted="false"/>
 </network-security-config>

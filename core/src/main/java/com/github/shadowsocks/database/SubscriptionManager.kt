@@ -1,3 +1,4 @@
+//region SSD
 package com.github.shadowsocks.database
 
 import android.database.sqlite.SQLiteCantOpenDatabaseException
@@ -67,3 +68,4 @@ object SubscriptionManager {
         null
     }
 }
+//endregion

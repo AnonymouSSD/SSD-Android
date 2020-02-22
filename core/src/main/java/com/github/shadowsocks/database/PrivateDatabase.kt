@@ -28,24 +28,29 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.github.shadowsocks.Core.app
 import com.github.shadowsocks.database.migration.RecreateSchemaMigration
 import com.github.shadowsocks.utils.Key
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 //region SSD
-@Database(entities = [Profile::class, KeyValuePair::class, Subscription::class], version = 27 + 1)
+@Database(entities = [Profile::class, KeyValuePair::class, Subscription::class], version = 28 + 1)
 //endregion
 abstract class PrivateDatabase : RoomDatabase() {
     companion object {
         private val instance by lazy {
-            Room.databaseBuilder(app, PrivateDatabase::class.java, Key.DB_PROFILE)
-                    .addMigrations(
-                            Migration26,
-                            //region SSD
-                            MigrationSSD1,
-                            //endregion
-                            Migration27
-                    )
-                    .fallbackToDestructiveMigration()
-                    .allowMainThreadQueries()
-                    .build()
+            Room.databaseBuilder(app, PrivateDatabase::class.java, Key.DB_PROFILE).apply {
+                addMigrations(
+                        Migration26,
+                        //region SSD
+                        MigrationSSD1,
+                        //endregion
+                        Migration27,
+                        Migration28
+                )
+                allowMainThreadQueries()
+                enableMultiInstanceInvalidation()
+                fallbackToDestructiveMigration()
+                setQueryExecutor { GlobalScope.launch { it.run() } }
+            }.build()
         }
 
         val profileDao get() = instance.profileDao()
@@ -54,7 +59,6 @@ abstract class PrivateDatabase : RoomDatabase() {
         val subscriptionDao get() = instance.subscriptionDao()
         //endregion
     }
-
     abstract fun profileDao(): Profile.Dao
     abstract fun keyValuePairDao(): KeyValuePair.Dao
 
@@ -67,11 +71,10 @@ abstract class PrivateDatabase : RoomDatabase() {
         }
     }
 
-    object Migration27 : Migration(26 + 1, 27 + 1) {
+    object Migration27 : Migration(26, 27) {
         override fun migrate(database: SupportSQLiteDatabase) =
                 database.execSQL("ALTER TABLE `Profile` ADD COLUMN `udpFallback` INTEGER")
     }
-
     //region SSD
     abstract fun subscriptionDao(): Subscription.Dao
 
@@ -109,4 +112,8 @@ abstract class PrivateDatabase : RoomDatabase() {
         }
     }
     //endregion
+    object Migration28 : Migration(27, 28) {
+        override fun migrate(database: SupportSQLiteDatabase) =
+                database.execSQL("ALTER TABLE `Profile` ADD COLUMN `metered` INTEGER NOT NULL DEFAULT 0")
+    }
 }

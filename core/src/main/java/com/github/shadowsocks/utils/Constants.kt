@@ -43,13 +43,14 @@ object Key {
 
     const val route = "route"
 
-    const val isAutoConnect = "isAutoConnect"
+    const val persistAcrossReboot = "isAutoConnect"
     const val directBootAware = "directBootAware"
 
     const val proxyApps = "isProxyApps"
     const val bypass = "isBypassApps"
     const val udpdns = "isUdpDns"
     const val ipv6 = "isIpv6"
+    const val metered = "metered"
 
     const val host = "proxy"
     const val password = "sitekey"
@@ -64,6 +65,7 @@ object Key {
     const val dirty = "profileDirty"
 
     const val tfo = "tcp_fastopen"
+    const val hosts = "hosts"
     const val assetUpdateTime = "assetUpdateTime"
 
     // TV specific values

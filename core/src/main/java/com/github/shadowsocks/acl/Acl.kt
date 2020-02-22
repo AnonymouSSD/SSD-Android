@@ -63,7 +63,6 @@ class Acl {
             set(value) = DataStore.publicStore.putString(CUSTOM_RULES,
                     if ((!value.bypass || value.subnets.size() == 0) && value.bypassHostnames.size() == 0 &&
                             value.proxyHostnames.size() == 0 && value.urls.size() == 0) null else value.toString())
-
         fun save(id: String, acl: Acl) = getFile(id).writeText(acl.toString())
     }
 
@@ -76,14 +75,11 @@ class Acl {
         override fun areItemsTheSame(item1: T?, item2: T?): Boolean = item1 == item2
         override fun compare(o1: T?, o2: T?): Int =
                 if (o1 == null) if (o2 == null) 0 else 1 else if (o2 == null) -1 else compareNonNull(o1, o2)
-
         abstract fun compareNonNull(o1: T, o2: T): Int
     }
-
     private open class DefaultSorter<T : Comparable<T>> : BaseSorter<T>() {
         override fun compareNonNull(o1: T, o2: T): Int = o1.compareTo(o2)
     }
-
     private object StringSorter : DefaultSorter<String>()
     private object SubnetSorter : DefaultSorter<Subnet>()
     private object URLSorter : BaseSorter<URL>() {
@@ -109,7 +105,6 @@ class Acl {
         bypass = other.bypass
         return this
     }
-
     fun fromReader(reader: Reader, defaultBypass: Boolean = false): Acl {
         bypassHostnames.clear()
         proxyHostnames.clear()
@@ -126,8 +121,7 @@ class Acl {
                 val blocks = (line as java.lang.String).split("#", 2)
                 val url = networkAclParser.matchEntire(blocks.getOrElse(1) { "" })?.groupValues?.getOrNull(1)
                 if (url != null) urls.add(URL(url))
-                val input = blocks[0].trim()
-                when (input) {
+                when (val input = blocks[0].trim()) {
                     "[outbound_block_list]" -> {
                         hostnames = null
                         subnets = null
@@ -161,13 +155,8 @@ class Acl {
 
     suspend fun flatten(depth: Int, connect: suspend (URL) -> URLConnection): Acl {
         if (depth > 0) for (url in urls.asIterable()) {
-            val child = Acl()
-            try {
-                child.fromReader(connect(url).getInputStream().bufferedReader(), bypass).flatten(depth - 1, connect)
-            } catch (e: IOException) {
-                e.printStackTrace()
-                continue
-            }
+            val child = Acl().fromReader(connect(url).getInputStream().bufferedReader(), bypass)
+            child.flatten(depth - 1, connect)
             if (bypass != child.bypass) {
                 Crashlytics.log(Log.WARN, TAG, "Imported network ACL has a conflicting mode set. " +
                         "This will probably not work as intended. URL: $url")

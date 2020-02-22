@@ -94,13 +94,11 @@ class KeyValuePair() {
         this.value = ByteBuffer.allocate(1).put((if (value) 1 else 0).toByte()).array()
         return this
     }
-
     fun put(value: Float): KeyValuePair {
         valueType = TYPE_FLOAT
         this.value = ByteBuffer.allocate(4).putFloat(value).array()
         return this
     }
-
     @Suppress("DEPRECATION")
     @Deprecated("Use long.")
     fun put(value: Int): KeyValuePair {
@@ -108,24 +106,23 @@ class KeyValuePair() {
         this.value = ByteBuffer.allocate(4).putInt(value).array()
         return this
     }
-
     fun put(value: Long): KeyValuePair {
         valueType = TYPE_LONG
         this.value = ByteBuffer.allocate(8).putLong(value).array()
         return this
     }
-
     fun put(value: String): KeyValuePair {
         valueType = TYPE_STRING
         this.value = value.toByteArray()
         return this
     }
-
     fun put(value: Set<String>): KeyValuePair {
         valueType = TYPE_STRING_SET
         val stream = ByteArrayOutputStream()
+        val intBuffer = ByteBuffer.allocate(4)
         for (v in value) {
-            stream.write(ByteBuffer.allocate(4).putInt(v.length).array())
+            intBuffer.rewind()
+            stream.write(intBuffer.putInt(v.length).array())
             stream.write(v.toByteArray())
         }
         this.value = stream.toByteArray()

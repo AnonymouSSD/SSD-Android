@@ -22,7 +22,7 @@ package com.github.shadowsocks.preference
 
 import androidx.preference.PreferenceDataStore
 import com.github.shadowsocks.database.KeyValuePair
-import java.util.*
+import java.util.HashSet
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 open class RoomPreferenceDataStore(private val kvPairDao: KeyValuePair.Dao) : PreferenceDataStore() {
@@ -49,27 +49,22 @@ open class RoomPreferenceDataStore(private val kvPairDao: KeyValuePair.Dao) : Pr
         kvPairDao.put(KeyValuePair(key).put(value))
         fireChangeListener(key)
     }
-
     override fun putFloat(key: String, value: Float) {
         kvPairDao.put(KeyValuePair(key).put(value))
         fireChangeListener(key)
     }
-
     override fun putInt(key: String, value: Int) {
         kvPairDao.put(KeyValuePair(key).put(value.toLong()))
         fireChangeListener(key)
     }
-
     override fun putLong(key: String, value: Long) {
         kvPairDao.put(KeyValuePair(key).put(value))
         fireChangeListener(key)
     }
-
     override fun putString(key: String, value: String?) = if (value == null) remove(key) else {
         kvPairDao.put(KeyValuePair(key).put(value))
         fireChangeListener(key)
     }
-
     override fun putStringSet(key: String, values: MutableSet<String>?) = if (values == null) remove(key) else {
         kvPairDao.put(KeyValuePair(key).put(values))
         fireChangeListener(key)

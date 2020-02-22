@@ -25,18 +25,25 @@ import androidx.core.os.bundleOf
 import com.github.shadowsocks.Core
 import com.github.shadowsocks.core.R
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
-import java.net.URL
+import kotlinx.coroutines.tasks.await
 
 object RemoteConfig {
     private val config = FirebaseRemoteConfig.getInstance().apply { setDefaults(R.xml.default_configs) }
 
-    val proxyUrl get() = URL(config.getString("proxy_url"))
+    private fun Exception.log() {
+        Log.w("RemoteConfig", this)
+        Core.analytics.logEvent("femote_config_failure", bundleOf(Pair(javaClass.simpleName, message)))
+    }
 
-    fun fetch() = config.fetch().addOnCompleteListener {
-        if (it.isSuccessful) config.activateFetched() else {
-            val e = it.exception ?: return@addOnCompleteListener
-            Log.w("RemoteConfig", e)
-            Core.analytics.logEvent("femote_config_failure", bundleOf(Pair(e.javaClass.simpleName, e.message)))
-        }
+    fun scheduleFetch() = config.fetch().addOnCompleteListener {
+        if (it.isSuccessful) config.activate() else it.exception?.log()
+    }
+
+    suspend fun fetch() = try {
+        config.fetch().await()
+        config to true
+    } catch (e: Exception) {
+        e.log()
+        config to false
     }
 }

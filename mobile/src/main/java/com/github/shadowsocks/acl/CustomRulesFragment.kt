@@ -20,6 +20,7 @@
 
 package com.github.shadowsocks.acl
 
+import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.DialogInterface
@@ -48,7 +49,10 @@ import com.github.shadowsocks.bg.BaseService
 import com.github.shadowsocks.net.Subnet
 import com.github.shadowsocks.plugin.AlertDialogFragment
 import com.github.shadowsocks.utils.asIterable
+import com.github.shadowsocks.utils.readableMessage
 import com.github.shadowsocks.utils.resolveResourceId
+import com.github.shadowsocks.widget.ListHolderListener
+import com.github.shadowsocks.widget.MainListListener
 import com.github.shadowsocks.widget.UndoSnackbarManager
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.parcel.Parcelize
@@ -62,7 +66,6 @@ class CustomRulesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener, 
     companion object {
         private const val REQUEST_CODE_ADD = 1
         private const val REQUEST_CODE_EDIT = 2
-        private const val TEMPLATE_REGEX_DOMAIN = "(^|\\.)%s$"
 
         private const val SELECTED_SUBNETS = "com.github.shadowsocks.acl.CustomRulesFragment.SELECTED_SUBNETS"
         private const val SELECTED_HOSTNAMES = "com.github.shadowsocks.acl.CustomRulesFragment.SELECTED_HOSTNAMES"
@@ -85,24 +88,22 @@ class CustomRulesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener, 
         Domain,
         Url;
     }
-
     @Parcelize
     data class AclItem(val item: String = "", val isUrl: Boolean = false) : Parcelable {
         fun toAny() = if (isUrl) URL(item) else Subnet.fromString(item) ?: item
     }
-
     @Parcelize
     data class AclEditResult(val edited: AclItem, val replacing: AclItem) : Parcelable
-
     class AclRuleDialogFragment : AlertDialogFragment<AclItem, AclEditResult>(),
             TextWatcher, AdapterView.OnItemSelectedListener {
         private lateinit var templateSelector: Spinner
         private lateinit var editText: EditText
         private lateinit var inputLayout: TextInputLayout
-        private lateinit var positive: Button
+        private val positive by lazy { (dialog as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE) }
 
         override fun AlertDialog.Builder.prepare(listener: DialogInterface.OnClickListener) {
             val activity = requireActivity()
+            @SuppressLint("InflateParams")
             val view = activity.layoutInflater.inflate(R.layout.dialog_acl_rule, null)
             templateSelector = view.findViewById(R.id.template_selector)
             editText = view.findViewById(R.id.content)
@@ -131,7 +132,6 @@ class CustomRulesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener, 
 
         override fun onStart() {
             super.onStart()
-            positive = (dialog as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
             validate()
         }
 
@@ -149,7 +149,7 @@ class CustomRulesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener, 
                         if (Subnet.fromString(this) == null) toPattern()
                         true
                     } catch (e: PatternSyntaxException) {
-                        message = e.localizedMessage
+                        message = e.readableMessage
                         false
                     }
                 }
@@ -157,7 +157,7 @@ class CustomRulesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener, 
                     IDN.toASCII(value.toString(), IDN.ALLOW_UNASSIGNED or IDN.USE_STD3_ASCII_RULES)
                     true
                 } catch (e: IllegalArgumentException) {
-                    message = e.cause?.localizedMessage ?: e.localizedMessage
+                    message = e.cause?.readableMessage ?: e.readableMessage
                     false
                 }
                 Template.Url -> try {
@@ -165,22 +165,31 @@ class CustomRulesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener, 
                     if ("http".equals(url.protocol, true)) message = getString(R.string.cleartext_http_warning)
                     true
                 } catch (e: MalformedURLException) {
-                    message = e.localizedMessage
+                    message = e.readableMessage
                     false
                 }
             }
             inputLayout.error = message
         }
 
-        override val ret
-            get() = AclEditResult(editText.text.toString().let { text ->
-                when (Template.values()[templateSelector.selectedItemPosition]) {
-                    Template.Generic -> AclItem(text)
-                    Template.Domain -> AclItem(TEMPLATE_REGEX_DOMAIN.format(Locale.ENGLISH, IDN.toASCII(text,
-                        IDN.ALLOW_UNASSIGNED or IDN.USE_STD3_ASCII_RULES).replace(".", "\\.")))
-                    Template.Url -> AclItem(text, true)
+        override fun ret(which: Int) = when (which) {
+            DialogInterface.BUTTON_POSITIVE -> {
+                AclEditResult(editText.text.toString().let { text ->
+                    when (Template.values()[templateSelector.selectedItemPosition]) {
+                        Template.Generic -> AclItem(text)
+                        Template.Domain -> AclItem(IDN.toASCII(text, IDN.ALLOW_UNASSIGNED or IDN.USE_STD3_ASCII_RULES)
+                                .replace(".", "\\.").let { "(^|\\.)$it\$" })
+                        Template.Url -> AclItem(text, true)
+                    }
+                }, arg)
             }
-            }, arg)
+            DialogInterface.BUTTON_NEUTRAL -> AclEditResult(arg, arg)
+            else -> null
+        }
+
+        override fun onClick(dialog: DialogInterface?, which: Int) {
+            if (which != DialogInterface.BUTTON_NEGATIVE) super.onClick(dialog, which)
+        }
     }
 
     private inner class AclRuleViewHolder(view: View) : RecyclerView.ViewHolder(view),
@@ -215,7 +224,6 @@ class CustomRulesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener, 
             if (selectedItems.isNotEmpty()) onLongClick(v)
             else AclRuleDialogFragment().withArg(AclItem(item)).show(this@CustomRulesFragment, REQUEST_CODE_EDIT)
         }
-
         override fun onLongClick(v: View?): Boolean {
             if (!selectedItems.add(item)) selectedItems.remove(item)    // toggle
             onSelectedItemsUpdated()
@@ -350,11 +358,8 @@ class CustomRulesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener, 
         }
     }
 
-    private val isEnabled get() = when ((activity as MainActivity).state) {
-        BaseService.CONNECTED -> Core.currentProfile?.first?.route != Acl.CUSTOM_RULES
-        BaseService.STOPPED -> true
-        else -> false
-    }
+    private val isEnabled get() = (activity as MainActivity).state == BaseService.State.Stopped ||
+            Core.currentProfile?.first?.route != Acl.CUSTOM_RULES
 
     private val selectedItems = HashSet<Any>()
     private val adapter by lazy { AclRulesAdapter() }
@@ -372,6 +377,7 @@ class CustomRulesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener, 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        view.setOnApplyWindowInsetsListener(ListHolderListener)
         if (savedInstanceState != null) {
             selectedItems.addAll(savedInstanceState.getStringArray(SELECTED_SUBNETS)
                     ?.mapNotNull(Subnet.Companion::fromString) ?: listOf())
@@ -386,6 +392,7 @@ class CustomRulesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener, 
         toolbar.setOnMenuItemClickListener(this)
         val activity = activity as MainActivity
         list = view.findViewById(R.id.list)
+        list.setOnApplyWindowInsetsListener(MainListListener)
         list.layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         list.itemAnimator = DefaultItemAnimator()
         list.adapter = adapter
@@ -426,7 +433,7 @@ class CustomRulesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener, 
                 is URL -> acl.urls.add(it)
             }
         }
-        clipboard.primaryClip = ClipData.newPlainText(null, acl.toString())
+        clipboard.setPrimaryClip(ClipData.newPlainText(null, acl.toString()))
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean = when (item.itemId) {
@@ -445,7 +452,7 @@ class CustomRulesFragment : ToolbarFragment(), Toolbar.OnMenuItemClickListener, 
         }
         R.id.action_import_gfwlist -> {
             val acl = Acl().fromId(Acl.GFWLIST)
-            if (!acl.bypass) acl.subnets.asIterable().forEach { adapter.addSubnet(it) }
+            if (acl.bypass) acl.subnets.asIterable().forEach { adapter.addSubnet(it) }
             acl.proxyHostnames.asIterable().forEach { adapter.addHostname(it) }
             acl.urls.asIterable().forEach { adapter.addURL(it) }
             true

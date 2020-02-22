@@ -19,11 +19,16 @@
                 android:alphabeticShortcut="o"
                 android:title="@string/action_import_file"/>
             <item
+                android:id="@+id/action_replace_file"
+                android:alphabeticShortcut="o"
+                android:title="@string/action_replace_file"
+                app:alphabeticModifiers="CTRL|SHIFT"/>
+            <item
                 android:id="@+id/action_manual_settings"
                 android:title="@string/add_profile_methods_manual_settings"
                 android:alphabeticShortcut="n"
-                app:alphabeticModifiers="CTRL|SHIFT" />
-            <!-- SSD -->
+                app:alphabeticModifiers="CTRL|SHIFT"/>
+            <!-- region SSD -->
             <item
                 android:id="@+id/action_add_subscription"
                 android:alphabeticShortcut="a"
@@ -34,7 +39,7 @@
                 android:alphabeticShortcut="u"
                 android:numericShortcut="6"
                 android:title="@string/update_subscription"/>
-            <!-- DSS -->
+            <!-- endregion -->
         </menu>
     </item>
     <item
@@ -51,10 +56,10 @@
                 android:id="@+id/action_export_file"
                 android:title="@string/action_export_file"
                 android:alphabeticShortcut="s"
-                app:alphabeticModifiers="CTRL|SHIFT" />
+                app:alphabeticModifiers="CTRL|SHIFT"/>
         </menu>
     </item>
-    <!-- SSD -->
+    <!-- region SSD -->
     <item
         android:id="@+id/action_tcping_latency"
         android:alphabeticShortcut="t"
@@ -63,5 +68,5 @@
         android:title="@string/tcping_latency"
         app:showAsAction="always">
     </item>
-    <!-- DSS -->
+    <!-- endregion -->
 </menu>

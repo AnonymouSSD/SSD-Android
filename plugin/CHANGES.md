@@ -1,3 +1,23 @@
+* 1.3.1:
+  * New theme resource `Theme.Shadowsocks.Immersive` for better Android Q-esque translucent navigation bars.
+    This is an opt-in feature.
+    Please add `android:theme="@style/Theme.Shadowsocks.Immersive"` to your `<activity>` to enable this theme.
+  * New color resources `light_*` and `dark_*` for passing to custom tabs;
+  * Dependency updates:
+    - `androidx.core:core-ktx:1.1.0-rc03`;
+    - `androidx.drawerlayout:drawerlayout:1.1.0-alpha03`;
+    - `com.google.android.material:material:1.1.0-alpha09`;
+    - `org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.41`.
+* 1.3.0:
+  * Optional new metadata `com.github.shadowsocks.plugin.executable_path` for even faster initialization;
+    (see doc for `PluginContract.METADATA_KEY_EXECUTABLE_PATH` for more information)
+  * Breaking API change: `val AlertDialogFragment.ret: Ret?` => `fun AlertDialogFragment.ret(which: Int): Ret?`;
+    (nothing needs to be done if you are not using this API)
+  * Dependency updates:
+    - Now targeting API 29;
+    - `androidx.core:core-ktx:1.1.0-rc01`;
+    - `com.google.android.material:material:1.1.0-alpha07`;
+    - `org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.40`.
 * 1.2.0:
   * New helper class `AlertDialogFragment` for creating `AlertDialog` that persists through configuration changes;
   * Dependency update: `com.google.android.material:material:1.1.0-alpha03`.

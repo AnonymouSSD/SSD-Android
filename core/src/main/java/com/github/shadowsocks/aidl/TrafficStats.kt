@@ -37,14 +37,12 @@ data class TrafficStats(
             txTotal + other.txTotal, rxTotal + other.rxTotal)
 
     constructor(parcel: Parcel) : this(parcel.readLong(), parcel.readLong(), parcel.readLong(), parcel.readLong())
-
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeLong(txRate)
         parcel.writeLong(rxRate)
         parcel.writeLong(txTotal)
         parcel.writeLong(rxTotal)
     }
-
     override fun describeContents() = 0
 
     companion object CREATOR : Parcelable.Creator<TrafficStats> {

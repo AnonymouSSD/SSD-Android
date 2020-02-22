@@ -38,7 +38,6 @@ class ProfilesDialogFragment : LeanbackListPreferenceDialogFragmentCompat() {
     private inner class ProfileViewHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
         val widgetView = view.findViewById<CompoundButton>(R.id.button)
         val titleView = view.findViewById<TextView>(android.R.id.title)
-
         init {
             view.findViewById<ViewGroup>(R.id.container).setOnClickListener(this)
         }
@@ -48,11 +47,10 @@ class ProfilesDialogFragment : LeanbackListPreferenceDialogFragmentCompat() {
             if (index == RecyclerView.NO_POSITION) return
             Core.switchProfile(adapter.profiles[index].id)
             (targetFragment as MainPreferenceFragment).startService()
-            fragmentManager?.popBackStack()
+            parentFragmentManager.popBackStack()
             adapter.notifyDataSetChanged()
         }
     }
-
     private inner class ProfilesAdapter : RecyclerView.Adapter<ProfileViewHolder>() {
         val profiles = ProfileManager.getAllProfiles()!!
 

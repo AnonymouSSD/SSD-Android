@@ -53,7 +53,6 @@ object DirectBoot : BroadcastReceiver() {
         app.registerReceiver(this, IntentFilter(Intent.ACTION_BOOT_COMPLETED))
         registered = true
     }
-
     override fun onReceive(context: Context, intent: Intent) {
         flushTrafficStats()
         app.unregisterReceiver(this)

@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?><!-- Based on: https://github.com/android/platform_frameworks_base/blob/505e3ab/core/res/res/layout/simple_list_item_2.xml -->
+<?xml version="1.0" encoding="utf-8"?>
+<!-- region SSD -->
+<!-- Based on: https://github.com/android/platform_frameworks_base/blob/505e3ab/core/res/res/layout/simple_list_item_2.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -143,3 +145,4 @@
             tools:text="@string/traffic" />
     </RelativeLayout>
 </LinearLayout>
+<!-- endregion -->

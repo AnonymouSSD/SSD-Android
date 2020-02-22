@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 28,
-    "identityHash": "844b791252eb0ab8a8e4f7723823a9e7",
+    "identityHash": "b60ecca4d684ffe73173478bffd50a17",
     "entities": [
       {
         "tableName": "Profile",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT, `host` TEXT NOT NULL, `remotePort` INTEGER NOT NULL, `password` TEXT NOT NULL, `method` TEXT NOT NULL, `route` TEXT NOT NULL, `remoteDns` TEXT NOT NULL, `proxyApps` INTEGER NOT NULL, `bypass` INTEGER NOT NULL, `udpdns` INTEGER NOT NULL, `ipv6` INTEGER NOT NULL, `individual` TEXT NOT NULL, `tx` INTEGER NOT NULL, `rx` INTEGER NOT NULL, `userOrder` INTEGER NOT NULL, `plugin` TEXT, `udpFallback` INTEGER, `subscription` INTEGER NOT NULL, `innerId` INTEGER NOT NULL, `ratio` REAL NOT NULL, `latency` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT, `host` TEXT NOT NULL, `remotePort` INTEGER NOT NULL, `password` TEXT NOT NULL, `method` TEXT NOT NULL, `route` TEXT NOT NULL, `remoteDns` TEXT NOT NULL, `proxyApps` INTEGER NOT NULL, `bypass` INTEGER NOT NULL, `udpdns` INTEGER NOT NULL, `ipv6` INTEGER NOT NULL, `metered` INTEGER NOT NULL, `individual` TEXT NOT NULL, `tx` INTEGER NOT NULL, `rx` INTEGER NOT NULL, `userOrder` INTEGER NOT NULL, `plugin` TEXT, `udpFallback` INTEGER)",
         "fields": [
           {
             "fieldPath": "id",
@@ -81,6 +81,12 @@
             "notNull": true
           },
           {
+            "fieldPath": "metered",
+            "columnName": "metered",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
             "fieldPath": "individual",
             "columnName": "individual",
             "affinity": "TEXT",
@@ -115,30 +121,6 @@
             "columnName": "udpFallback",
             "affinity": "INTEGER",
             "notNull": false
-          },
-          {
-            "fieldPath": "subscription",
-            "columnName": "subscription",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "innerId",
-            "columnName": "innerId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "ratio",
-            "columnName": "ratio",
-            "affinity": "REAL",
-            "notNull": true
-          },
-          {
-            "fieldPath": "latency",
-            "columnName": "latency",
-            "affinity": "INTEGER",
-            "notNull": true
           }
         ],
         "primaryKey": {
@@ -181,103 +163,11 @@
         },
         "indices": [],
         "foreignKeys": []
-      },
-      {
-        "tableName": "Subscription",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `airport` TEXT NOT NULL, `port` INTEGER NOT NULL, `encryption` TEXT NOT NULL, `password` TEXT NOT NULL, `trafficUsed` REAL NOT NULL, `trafficTotal` REAL NOT NULL, `expiry` TEXT NOT NULL, `url` TEXT NOT NULL, `plugin` TEXT NOT NULL, `pluginOptions` TEXT NOT NULL, `selectedProfileId` INTEGER NOT NULL, `proxy` INTEGER NOT NULL)",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "airport",
-            "columnName": "airport",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "port",
-            "columnName": "port",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "encryption",
-            "columnName": "encryption",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "password",
-            "columnName": "password",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "trafficUsed",
-            "columnName": "trafficUsed",
-            "affinity": "REAL",
-            "notNull": true
-          },
-          {
-            "fieldPath": "trafficTotal",
-            "columnName": "trafficTotal",
-            "affinity": "REAL",
-            "notNull": true
-          },
-          {
-            "fieldPath": "expiry",
-            "columnName": "expiry",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "url",
-            "columnName": "url",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "plugin",
-            "columnName": "plugin",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "pluginOptions",
-            "columnName": "pluginOptions",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "selectedProfileId",
-            "columnName": "selectedProfileId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "proxy",
-            "columnName": "proxy",
-            "affinity": "INTEGER",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "columnNames": [
-            "id"
-          ],
-          "autoGenerate": true
-        },
-        "indices": [],
-        "foreignKeys": []
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"844b791252eb0ab8a8e4f7723823a9e7\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"b60ecca4d684ffe73173478bffd50a17\")"
     ]
   }
 }

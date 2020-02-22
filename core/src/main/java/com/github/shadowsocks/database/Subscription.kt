@@ -1,3 +1,4 @@
+//region SSD
 package com.github.shadowsocks.database
 
 import android.os.Parcelable
@@ -48,3 +49,4 @@ data class Subscription(
         fun delete(id: Long): Int
     }
 }
+//endregion

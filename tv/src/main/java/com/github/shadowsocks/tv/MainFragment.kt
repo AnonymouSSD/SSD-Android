@@ -38,12 +38,11 @@ class MainFragment : LeanbackSettingsFragmentCompat() {
         onPreferenceStartInitialScreen()
         return true
     }
-
     override fun onPreferenceStartFragment(caller: PreferenceFragmentCompat?, pref: Preference?) = false
     override fun onPreferenceDisplayDialog(caller: PreferenceFragmentCompat, pref: Preference?): Boolean {
         if (pref?.key == Key.id) {
             if ((childFragmentManager.findFragmentById(R.id.settings_preference_fragment_container)
-                            as MainPreferenceFragment).state == BaseService.STOPPED) {
+                            as MainPreferenceFragment).state == BaseService.State.Stopped) {
                 startPreferenceFragment(ProfilesDialogFragment().apply {
                     arguments = bundleOf(Pair(LeanbackPreferenceDialogFragmentCompat.ARG_KEY, Key.id))
                     setTargetFragment(caller, 0)

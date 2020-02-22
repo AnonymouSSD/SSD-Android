@@ -1,5 +1,18 @@
 # ShadowsocksD-X for Android
 
+```
+因 @TheCGDF 繁忙，现计划转让本repo，要求：
+1、有Android开发能力（能够跟随上游更新）
+2、不咕
+注：转让后不限制接手者是否移除“全家桶检测”
+转让条件：
+向本repo提一条PR，将SSD-Android跟随上游更新至最新稳定版本，无重大BUG即可获得转让资格
+如有困难可以TG联系 @TheCGDF 获取一定的技术支持
+Tips:
+本repo中所有和上游有差异的代码都使用“region SSD”注释标记并包裹了起来，总计不超过50处
+因此git clone上游之后项目，可以使用Android Studio的Find in Path功能，搜索本repo中的“region SSD”并转移至上游项目即可
+```
+
 ## Basic Project - 基础项目
 
 [SSD-Andoird](https://github.com/TheCGDF/SSD-Android)
@@ -8,7 +21,7 @@
 
 ## Shared Wiki - 共享Wiki
 
-[ShadowsocksD项目共享Wiki](https://github.com/CGDF-Github/SSD-Windows/wiki)
+[ShadowsocksD项目共享Wiki](https://github.com/TheCGDF/SSD-Windows/wiki)
 
 ## Environment - 环境
 
@@ -19,10 +32,6 @@ Android 5.0+
 ## Development - 开发
 
 \[Windows/Linux/MacOS\]
-
-```
-因overturn已被取代移除，现已可以在Windows平台上进行编译
-```
 
 需使用`git clone --recurse-submodules <repo>`或 `git submodule update --init --recursive`进行初始化
 
